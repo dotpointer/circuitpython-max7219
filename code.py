@@ -6,12 +6,9 @@ display = max7219.SevenSegment(digits=8, scan_digits=8, pin_clk=board.SCK, pin_c
 display.brightness(0)
 display.letter(2, 'A', flush=True)
 time.sleep(1)
-display.text("ABCDEF")
+display.text("ABCDEFG")
 time.sleep(1)
 display.number(3.14159)
 time.sleep(1)
-display.message("Hello World")
+display.message("Hello World... A B C D E F G H I J K L M N O P Q R S T U V X Y Z")
 display.clear()
-
-while True:
-    time.sleep(100)

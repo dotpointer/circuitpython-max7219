@@ -118,10 +118,41 @@ class SevenSegment:
     def message(self, text, delay=0.4):
         """Transitions the text message across the devices from left-to-right."""
         self.clear(False)
-        for char in text:
-            time.sleep(delay)
-            self.scroll(rotate=False, flush=False)
-            self.letter(self.digits - 1, char)
+
+        src_pos = 0
+        strval = str(text)
+
+        for char in strval:
+            dot = False
+            # this is a dot
+            if char == '.':
+                # but this is the first source character
+                if src_pos == 0:
+                    # print it then
+                    time.sleep(delay)
+                    self.scroll(rotate=False, flush=False)
+                    self.letter(self.digits - 1, " ", True)
+
+                # this is not the first source character but the previous was a dot
+                elif src_pos > 0 and strval[src_pos - 1] == ".":
+                    # print it then
+                    time.sleep(delay)
+                    self.scroll(rotate=False, flush=False)
+                    self.letter(self.digits - 1, " ", True)
+
+            # this is not a dot
+            else:
+                # this is not the last character
+                if src_pos < len(strval) - 1:
+                    # the next is a dot
+                    if strval[src_pos + 1] == '.':
+                        dot = True
+                # print it then
+                time.sleep(delay)
+                self.scroll(rotate=False, flush=False)
+                self.letter(self.digits - 1, char, dot)
+
+            src_pos += 1
 
     def number(self, val):
         """Formats the value according to the parameters supplied, and displays it."""
@@ -173,8 +204,41 @@ class SevenSegment:
     def text(self, text):
         """Outputs the text (as near as possible) on the specific device."""
         self.clear(False)
-        text = text[:self.digits]  # make sure we don't overrun the buffer
-        for pos, char in enumerate(text):
-            self.letter(pos, char, flush=False)
+
+        src_pos = 0
+        tgt_pos = 0
+        strval = str(text)
+
+        for char in strval:
+            # make sure we don't overrun the buffer
+            if tgt_pos >= self.digits:
+                break
+
+            dot = False
+            # this is a dot
+            if char == '.':
+                # but this is the first source character
+                if src_pos == 0:
+                    # print it then
+                    self.letter(tgt_pos, " ", True, False)
+                    tgt_pos += 1
+                # this is not the first source character but the previous was a dot
+                elif src_pos > 0 and strval[src_pos - 1] == ".":
+                    # print it then
+                    self.letter(tgt_pos, " ", True, False)
+                    tgt_pos += 1
+
+            # this is not a dot
+            else:
+                # this is not the last character
+                if src_pos < len(strval) - 1:
+                    # the next is a dot
+                    if strval[src_pos + 1] == '.':
+                        dot = True
+                # print it then
+                self.letter(tgt_pos, char, dot, False)
+                tgt_pos += 1
+
+            src_pos += 1
 
         self.flush()
